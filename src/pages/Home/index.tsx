@@ -18,7 +18,7 @@ import Loading from '../../components/Loading';
 import axios from 'axios';
 import logoAlyne from '../../assets/logo-dark.png';
 import logoAlyne2 from '../../assets/logo-light.png';
-import LogoHome from '../../assets/logo-home.png';
+import LogoHome from '../../assets/logo-home.webp';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Modal from 'react-bootstrap/Modal';
 import { MetaXRealizado } from '../../functions/FuncoesRelatorio';
