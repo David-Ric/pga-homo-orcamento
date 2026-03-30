@@ -166,6 +166,8 @@ export default function Orcamento() {
 
   const [modoEdicao, setModoEdicao] = useState(false);
   const [showPdf, setShowPdf] = useState(false);
+  const [orcamentoPdf, setOrcamentoPdf] = useState<CabecalhoOrcamentoDetalhe | null>(null);
+  const [itensPdf, setItensPdf] = useState<any[]>([]);
 
   const totalOrcamento = useMemo(() => {
     return itensOrcamento
@@ -293,8 +295,8 @@ export default function Orcamento() {
   const emissaoData = `${dataEmissao.getDate()}/${dataEmissao.getMonth() + 1}/${dataEmissao.getFullYear()}`;
 
   const PdfDoc = () => {
-    const cab = orcamentoSelecionado;
-    const itens = Array.isArray(itensSelecionados) ? itensSelecionados : [];
+    const cab = orcamentoPdf || orcamentoSelecionado;
+    const itens = Array.isArray(itensPdf) && itensPdf.length > 0 ? itensPdf : Array.isArray(itensSelecionados) ? itensSelecionados : [];
     const ufCli = String(cab?.uf || '').trim().toUpperCase();
     const totalProdutos = itens.reduce((acc, it) => acc + (Number(it?.valTotal) || 0), 0);
     const totalIpi = itens.reduce((acc, it) => {
@@ -768,8 +770,8 @@ export default function Orcamento() {
     carregarListaOrcamentos();
   }, [showlistaOrcamentos, paginaList]);
 
-  async function consultarCnpj() {
-    const digitos = String(cnpjCpf || '').replace(/\D/g, '');
+  async function consultarCnpj(digitosOverride?: string) {
+    const digitos = String(digitosOverride !== undefined ? digitosOverride : cnpjCpf || '').replace(/\D/g, '');
     if (digitos.length !== 14) return;
     try {
       const resp = await api.get(`/api/CabecalhoOrcamento/cnpj/${digitos}`);
@@ -811,6 +813,44 @@ export default function Orcamento() {
     setCep('');
   }
 
+  function iniciarNovoOrcamentoLimpo() {
+    const novoPedidoId = `${usuariolog.username}${moment().format('YYYYMMDDHHmmss')}`;
+    setPedidoId(novoPedidoId);
+    setModoEdicao(true);
+    setOrcamentoSelecionado(null);
+    setItensSelecionados([]);
+    setItensOrcamento([]);
+    setItensDoPedido(0);
+    setTabelaPrecoId(null);
+    setTipoNegociacaoId(null);
+    setEmpresaId(null);
+    setObservacao('');
+    setDataEntrega(moment().format('YYYY-MM-DD'));
+    setCnpjCpf('');
+    limparDadosParceiro();
+    setSearch('');
+    setFilter(false);
+    setItensTabela([]);
+    setItensTabelaGeral([]);
+    setGrupoPesquisa([]);
+    setPagina(1);
+    setTotalPaginas(0);
+    setAdicionandoItem(false);
+    setEmUso(false);
+    setAddItem(true);
+    setProdutoId(0);
+    setNomeProduto('');
+    setValorItem(0);
+    setValorUnitario(0);
+    setQuantItem('');
+    setUnidade1('');
+    setUnidade2('');
+    setUnidadeEscolhida('');
+    setQuantUnid(0);
+    setMult(false);
+    setaliIpi(0);
+  }
+
   function fecharAviso() {
     const acao = acaoDepoisAviso;
     setAlertErroMensage(false);
@@ -823,8 +863,8 @@ export default function Orcamento() {
   }
 
   async function handleDownloadExcel() {
-    const cab = orcamentoSelecionado;
-    const itens = Array.isArray(itensSelecionados) ? itensSelecionados : [];
+    const cab = orcamentoPdf || orcamentoSelecionado;
+    const itens = Array.isArray(itensPdf) && itensPdf.length > 0 ? itensPdf : Array.isArray(itensSelecionados) ? itensSelecionados : [];
     if (!cab?.pedidoId) {
       setTituloAviso('Aviso');
       setAlertErroMensage(true);
@@ -1180,9 +1220,16 @@ export default function Orcamento() {
       setTituloAviso('Sucesso');
       setAlertErroMensage(true);
       setMsgErro('Orçamento salvo com sucesso.');
+      try {
+        const respSaved = await api.get(`/api/CabecalhoOrcamento/pedidoId/${encodeURIComponent(pedidoId)}`);
+        setOrcamentoPdf(respSaved?.data?.cabecalho || null);
+        setItensPdf(Array.isArray(respSaved?.data?.itens) ? respSaved.data.itens : []);
+      } catch {
+        setOrcamentoPdf(null);
+        setItensPdf([]);
+      }
       await carregarListaOrcamentos();
-      await selecionarOrcamento(pedidoId);
-      setModoEdicao(false);
+      iniciarNovoOrcamentoLimpo();
       const deveAbrirPdf = !statusOverride?.status || statusOverride.status !== 'Cancelado';
       setAcaoDepoisAviso(deveAbrirPdf ? 'pdf' : null);
     } catch (e: any) {
@@ -1418,9 +1465,9 @@ export default function Orcamento() {
                             limparDadosParceiro();
                           }
                         }}
-                        onBlur={() => {
-                          const digits = String(cnpjCpf || '').replace(/\D/g, '');
-                          if (digits.length === 14) consultarCnpj();
+                        onBlur={(e) => {
+                          const digits = String((e.currentTarget as HTMLInputElement)?.value || '').replace(/\D/g, '');
+                          if (digits.length === 14) consultarCnpj(digits);
                         }}
                   />
                 </div>
@@ -2445,7 +2492,7 @@ export default function Orcamento() {
         >
           <Modal.Title style={{ marginRight: 'auto' }}>PDF Orçamento</Modal.Title>
           <div className="d-flex" style={{ flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
-            <PDFDownloadLink document={<PdfDoc />} fileName={`orcamento_${orcamentoSelecionado?.pedidoId || ''}.pdf`}>
+            <PDFDownloadLink document={<PdfDoc />} fileName={`orcamento_${(orcamentoPdf || orcamentoSelecionado)?.pedidoId || ''}.pdf`}>
               {({ loading }) => (
                 <button className="btn btn-dark" disabled={loading}>
                   Baixar PDF

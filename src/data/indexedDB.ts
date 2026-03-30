@@ -641,7 +641,9 @@ export async function criarBancoDados() {
     },
   });
 
-  return db;
+  try {
+    db.close();
+  } catch {}
 }
 
 console.log('Banco de dados verificado e atualizado com sucesso!');
