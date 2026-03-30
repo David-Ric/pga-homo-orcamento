@@ -2077,9 +2077,27 @@ function PedidoVendas() {
     dataEmissao.getMonth() + 1
   }/${dataEmissao.getFullYear()}`;
 
-  const PDFFile = () => (
-    <Document>
-      <Page style={styles.body}>
+  const PDFFile = () => {
+    const itensPdf = pedidosanteriores ? itensPedidoSelecionadoListAtivos : itensNovosPedido;
+    const totalProdutosPdf = Array.isArray(itensPdf)
+      ? itensPdf.reduce((acc: number, it: any) => acc + (Number(it?.valTotal) || 0), 0)
+      : 0;
+    const totalIpiPdf =
+      ufCliente === 'CE'
+        ? 0
+        : Array.isArray(itensPdf)
+        ? itensPdf.reduce((acc: number, it: any) => {
+            const base = Number(it?.valTotal) || 0;
+            const ali = Number(it?.produto?.aliIpi) || 0;
+            if (!ali) return acc;
+            return acc + base * (ali / 100);
+          }, 0)
+        : 0;
+    const valorLiquidoPdf = totalProdutosPdf + totalIpiPdf;
+
+    return (
+      <Document>
+        <Page style={styles.body}>
         <View style={styles.container}>
           <Text style={styles.textoData}>Emissão: {emissao}</Text>
           <Text style={styles.textoPeddo}>PEDIDO DE VENDA </Text>
@@ -2456,11 +2474,7 @@ function PedidoVendas() {
                     { width: '50%', textAlign: 'right' },
                   ]}
                 >
-                  {pedidosanteriores ? (
-                    <>{moeda(valorPedidoSelecionado)}</>
-                  ) : (
-                    <>{moeda(valorTotalNovo)}</>
-                  )}{' '}
+                  {moeda(totalProdutosPdf)}{' '}
                 </Text>
               </View>
               <View style={styles.tableRow}>
@@ -2478,13 +2492,7 @@ function PedidoVendas() {
                     { width: '50%', textAlign: 'right' },
                   ]}
                 >
-                  {ufCliente === 'CE' ? (
-                    <>{moeda(0)}</>
-                  ) : pedidosanteriores ? (
-                    <>{moeda(IpiEscolhido - valorPedidoSelecionado)}</>
-                  ) : (
-                    <>{moeda(IpiEscolhido - valorTotalNovo)}</>
-                  )}{' '}
+                  {moeda(totalIpiPdf)}{' '}
                 </Text>
               </View>
               <View style={styles.tableRow}>
@@ -2503,13 +2511,9 @@ function PedidoVendas() {
                   ]}
                 >
                   {ufCliente === 'CE' ? (
-                    pedidosanteriores ? (
-                      <>{moeda(valorPedidoSelecionado)}</>
-                    ) : (
-                      <>{moeda(valorTotalNovo)}</>
-                    )
+                    <>{moeda(totalProdutosPdf)}</>
                   ) : (
-                    <>{moeda(IpiEscolhido)}</>
+                    <>{moeda(valorLiquidoPdf)}</>
                   )}{' '}
                 </Text>
               </View>
@@ -2526,9 +2530,10 @@ function PedidoVendas() {
             `${pageNumber} / ${totalPages}`
           }
         />
-      </Page>
-    </Document>
-  );
+        </Page>
+      </Document>
+    );
+  };
 
   //===================================================================================================================
 
@@ -3222,6 +3227,27 @@ function PedidoVendas() {
 
   function ipi(valor: any) {
     return valor / 100;
+  }
+
+  function calcularTotaisPedidoComIpi(itens: any, uf: any) {
+    const lista = Array.isArray(itens) ? itens : [];
+    const ufCli = String(uf || '').trim().toUpperCase();
+    const totalProdutos = lista.reduce(
+      (acc: number, it: any) => acc + (Number(it?.valTotal) || 0),
+      0
+    );
+    const totalIpi =
+      ufCli === 'CE'
+        ? 0
+        : lista.reduce((acc: number, it: any) => {
+            const base = Number(it?.valTotal) || 0;
+            const ali = Number(
+              it?.produto?.aliIpi ?? it?.produto?.produto?.aliIpi ?? 0
+            );
+            if (!ali) return acc;
+            return acc + base * (ali / 100);
+          }, 0);
+    return { totalProdutos, totalIpi, totalLiquido: totalProdutos + totalIpi };
   }
 
   function PesquisaNome() {
@@ -14183,7 +14209,19 @@ WHERE PRO.CODPROD <> 0 AND PRO.USOPROD IN ('V','R')`;
                                 style={{ color: '#2031ed', fontWeight: 'bold' }}
                                 className="super-texto2"
                               >
-                                R$ {moeda(ufCliente === 'CE' ? valorPedidoSelecionado : IpiEscolhido)}
+                                R${' '}
+                                {moeda(
+                                  calcularTotaisPedidoComIpi(
+                                    itensPedidoSelecionadoListAtivos.length > 0
+                                      ? itensPedidoSelecionadoListAtivos
+                                      : Array.isArray(itensPedidoSelecionado)
+                                      ? filtrarItensAtivosLista(
+                                          itensPedidoSelecionado as any
+                                        )
+                                      : [],
+                                    ufCliente
+                                  ).totalLiquido
+                                )}
                               </h1>
                             </div>
                             <div style={{ marginLeft: 'auto', alignSelf: 'center' }}>
@@ -15510,7 +15548,13 @@ WHERE PRO.CODPROD <> 0 AND PRO.USOPROD IN ('V','R')`;
                                       : { color: '#0000FF' }
                                   }
                                 >
-                                  R$ {moeda(ufCliente === 'CE' ? somaTotal : valorTotalComIpi)}
+                                  R${' '}
+                                  {moeda(
+                                    calcularTotaisPedidoComIpi(
+                                      arrayPedido,
+                                      ufCliente
+                                    ).totalLiquido
+                                  )}
                                 </h1>
                               </div>
 
@@ -17678,7 +17722,17 @@ WHERE PRO.CODPROD <> 0 AND PRO.USOPROD IN ('V','R')`;
                       style={{ color: '#2031ed', fontWeight: 'bold' }}
                       className="super-texto2"
                     >
-                      R$ {moeda(ufCliente === 'CE' ? valorPedidoSelecionado : IpiEscolhido)}
+                      R${' '}
+                      {moeda(
+                        calcularTotaisPedidoComIpi(
+                          itensPedidoSelecionadoListAtivos.length > 0
+                            ? itensPedidoSelecionadoListAtivos
+                            : Array.isArray(itensPedidoSelecionado)
+                            ? filtrarItensAtivosLista(itensPedidoSelecionado as any)
+                            : [],
+                          ufCliente
+                        ).totalLiquido
+                      )}
                     </h1>
                   </div>
                 </div>
