@@ -86,24 +86,6 @@ export default function RelPedNaoSeraFaturado() {
   const [showMensageSankhyaErro, setShowMensageSankhyaErro] = useState(false);
 
   useEffect(() => {
-    LoginSankhya();
-  }, []);
-
-  async function LoginSankhya() {
-    console.log('entrou no login Sankhya');
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya ok', response);
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log('login sankhya ok F', error);
-        setShowMensageSankhyaErro(true);
-      });
-  }
-
-  useEffect(() => {
     window.scrollTo(0, 0);
     logado();
     Finalizar();
@@ -160,15 +142,12 @@ export default function RelPedNaoSeraFaturado() {
     setLoading(true);
     setSucess(10);
     sucess = 10;
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-        AtualizaMesMes();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await AtualizaMesMes();
+    } catch (error) {
+      setLoading(false);
+      setShowMensageSankhyaErro(true);
+    }
   }
 
 //==================================================================

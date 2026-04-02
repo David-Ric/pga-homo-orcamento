@@ -1850,16 +1850,11 @@ function PedidoVendas() {
   }, []);
 
   async function GetVerificaLogin() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya Adm coord', response);
-
-        ListaCabecalhoPedido();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await ListaCabecalhoPedido();
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
 
   async function ListaCabecalhoPedido() {
@@ -3458,18 +3453,14 @@ function PedidoVendas() {
     console.log('entrou no login Sankhya');
     setrespostaSank('Verificando conexão...');
     respostaSank = 'Verificando conexão...';
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya ok', response);
-        receberDadosSankhyaVendedor();
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log('erro ao efetuar login não mobile');
-        setShowMensageSankhya(false);
-        setShowMensageSankhyaErro(true);
-      });
+    try {
+      await receberDadosSankhyaVendedor();
+    } catch (error) {
+      setLoading(false);
+      console.log('erro ao efetuar login não mobile');
+      setShowMensageSankhya(false);
+      setShowMensageSankhyaErro(true);
+    }
   }
 
   async function receberDadosSankhyaVendedor() {
@@ -3545,7 +3536,6 @@ function PedidoVendas() {
           setTabelarro2('Erro ao receber dados para a tabela TipoNegociacao');
         }
 
-        await LoginSankhya(0);
         receberDadosSankhyaParceiro();
       })
       .catch((error) => {
@@ -3998,23 +3988,15 @@ function PedidoVendas() {
     sucess = 10;
     setrespostaSank('Verificando conexão...');
     respostaSank = 'Verificando conexão...';
-    // setLoading(true)
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya tester ok', response);
-        console.log('entrou no login Sankhya');
-
-        receberTipoNeg();
-      })
-      .catch((error) => {
-        setLoading(false);
-        setShowMensageSankhya(false);
-        console.log('erro ao efetuar login não mobile');
-        setShowMensageSankhya(false);
-
-        setShowMensageSankhyaErro(true);
-      });
+    try {
+      await receberTipoNeg();
+    } catch (error) {
+      setLoading(false);
+      setShowMensageSankhya(false);
+      console.log('erro ao efetuar login não mobile');
+      setShowMensageSankhya(false);
+      setShowMensageSankhyaErro(true);
+    }
   }
 
   async function receberTipoNeg() {
@@ -12751,31 +12733,22 @@ WHERE PRO.CODPROD <> 0 AND PRO.USOPROD IN ('V','R')`;
 
   //==============login sankhya==================================
   async function LoginSankhya(numPedido: any) {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-        setTimeout(() => {}, 3000);
-      })
-      .catch((error) => {
-        setLoading(false);
-
-        console.log('erro', error);
-      });
+    try {
+      setTimeout(() => {}, 3000);
+    } catch (error) {
+      setLoading(false);
+      console.log('erro', error);
+    }
   }
 
   //===========LOGIN SANKHYA PESQUISA SALDO ======================
   async function LoginSankhyaSaldo(codPar: any) {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-        SaldoLimiteCred(codPar);
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log('erro', error);
-      });
+    try {
+      await SaldoLimiteCred(codPar);
+    } catch (error) {
+      setLoading(false);
+      console.log('erro', error);
+    }
   }
   async function SaldoLimiteCred(codigoParceiro: any) {
     console.log('codigo do parceiro....', codigoParceiro);
@@ -12859,14 +12832,7 @@ WHERE PRO.CODPROD <> 0 AND PRO.USOPROD IN ('V','R')`;
 
   //===========enviar dados sankhya =============================//
   async function GetVerificaEnviado(numeroPedido: any) {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log(`verificando envio resposta  ${numeroPedido}`, response);
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    console.log(`verificando envio resposta  ${numeroPedido}`);
   }
 
   async function GetVerificaEnviado2(numeroPedido: any) {
@@ -13479,32 +13445,14 @@ WHERE PRO.CODPROD <> 0 AND PRO.USOPROD IN ('V','R')`;
 
   //==============login sankhya (NÃO MAIS UTILIZADO ERA QUANDO ERA ENVIADO DIRETAMENTE AO SANKHYA)==================================
   async function LoginSankhya2(numeroPedidoSelecionado: any) {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-        setTimeout(() => {
-          VerificarEnvio2(numeroPedidoSelecionado);
-        }, 8000);
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log('erro', error);
-      });
+    setTimeout(() => {
+      VerificarEnvio2(numeroPedidoSelecionado);
+    }, 8000);
   }
 
   //=========ENVIANDO DADOS DEPOIS DE SALVOS (NÃO MAIS UTILIZADO ERA QUANDO ERA ENVIADO DIRETAMENTE AO SANKHYA) ===================================================//
   async function GetVerificaEnviadoPosSave(numeroPedido: any) {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya Adm coord', response);
-
-        GetVerificaEnviado3(numeroPedido);
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    await GetVerificaEnviado3(numeroPedido);
   }
   async function GetVerificaEnviado3(numeroPedido: any) {
     const sql = `SELECT * from AD_Z38 where PALMPV =${numeroPedido}`;

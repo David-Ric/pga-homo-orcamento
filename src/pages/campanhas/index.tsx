@@ -232,26 +232,8 @@ export default function Campanhas() {
   const [showMensageSankhyaErro, setShowMensageSankhyaErro] = useState(false);
 
   useEffect(() => {
-    LoginSankhyaerro();
-  }, []);
-
-  useEffect(() => {
     LoginSankhya();
   }, []);
-
-  async function LoginSankhyaerro() {
-    console.log('entrou no login Sankhya');
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya ok', response);
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log('login sankhya ok F', error);
-        setShowMensageSankhyaErro(true);
-      });
-  }
 
   const { appOnline } = useAppOnlineStatus();
   const isOnline = appOnline;
@@ -386,15 +368,11 @@ export default function Campanhas() {
   async function LoginSankhyaDashAdmin() {
     setLoading(true);
 
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-        DadosMetaMesValorMesAdmin();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await DadosMetaMesValorMesAdmin();
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
   //==========================================================================================
 
@@ -656,15 +634,11 @@ export default function Campanhas() {
     setLoading(true);
     setSucess(10);
 
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-        DadosMetaMesValorMesRepresentante();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await DadosMetaMesValorMesRepresentante();
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
   //====================================================================================
 
@@ -1260,20 +1234,15 @@ export default function Campanhas() {
     setmesAescolhido(mesEscolhido);
     setAnoescolhido(AnoFilter);
     Anoescolhido = AnoFilter;
-
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya coordenador', response);
-        if (usuario.grupoId == 2) {
-          AcompanhametoMesaMesFilter(codCamp);
-        } else {
-          AcompanhametoMesaMes(codCamp);
-        }
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      if (usuario.grupoId == 2) {
+        await AcompanhametoMesaMesFilter(codCamp);
+      } else {
+        await AcompanhametoMesaMes(codCamp);
+      }
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
 
   async function AcompanhametoMesaMesFilter(codCampanha: any) {
@@ -1432,15 +1401,12 @@ export default function Campanhas() {
     setmesAescolhido(mesEscolhido);
     setAnoescolhido(AnoFilter);
     Anoescolhido = AnoFilter;
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya coordenador', response);
-        DadosSelectCampanha();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await DadosSelectCampanha();
+    } catch (error) {
+      setLoading(false);
+      setShowMensageSankhyaErro(true);
+    }
   }
 
   async function DadosSelectCampanha() {
@@ -1776,37 +1742,33 @@ export default function Campanhas() {
     setAnoescolhido(AnoFilter);
     Anoescolhido = AnoFilter;
 
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya coordenador', response);
+    try {
+      ListaCoord();
+      if (usuario.grupoId == 5) {
+        console.log(
+          'ENTROU COMO COORDENADOR================================'
+        );
+        await DadosVendasXMeta();
+      } else {
+        console.log(
+          'NÃO É COORDENADOR======================================='
+        );
+        await DadosVendasXMetaAdm();
+      }
+    } catch (error) {
+      console.log('erro', error);
+      if (usuario.grupoId == 5) {
+        console.log(
+          'ENTROU COMO COORDENADOR================================'
+        );
+        await DadosVendasXMeta();
+      } else {
+        console.log(
+          'NÃO É COORDENADOR======================================='
+        );
         ListaCoord();
-        if (usuario.grupoId == 5) {
-          console.log(
-            'ENTROU COMO COORDENADOR================================'
-          );
-          DadosVendasXMeta();
-        } else {
-          console.log(
-            'NÃO É COORDENADOR======================================='
-          );
-          DadosVendasXMetaAdm();
-        }
-      })
-      .catch((error) => {
-        console.log('erro', error);
-        if (usuario.grupoId == 5) {
-          console.log(
-            'ENTROU COMO COORDENADOR================================'
-          );
-          DadosVendasXMeta();
-        } else {
-          console.log(
-            'NÃO É COORDENADOR======================================='
-          );
-          ListaCoord();
-        }
-      });
+      }
+    }
   }
 
   async function DadosVendasXMeta() {
@@ -2336,26 +2298,9 @@ export default function Campanhas() {
     setmesAescolhido(mesEscolhido);
     setAnoescolhido(AnoFilter);
     Anoescolhido = AnoFilter;
-
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya Adm coord', response);
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
   }
 
   async function LoginSankhyaPagina() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya Adm coord', response);
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
   }
 
   async function LoginSankhyaDashAdm() {
@@ -2365,19 +2310,12 @@ export default function Campanhas() {
     setmesAescolhido(mesEscolhido);
     setAnoescolhido(AnoFilter);
     Anoescolhido = AnoFilter;
-
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya Adm coord', response);
-
-        DadosVendasXMetaAdm();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-
-        DadosVendasXMetaAdm();
-      });
+    try {
+      await DadosVendasXMetaAdm();
+    } catch (error) {
+      console.log('erro', error);
+      await DadosVendasXMetaAdm();
+    }
   }
 
   async function DadosVendasXMetaAdm() {
@@ -2802,15 +2740,11 @@ export default function Campanhas() {
   let [codVendedor, setcodVendedor] = useState(0);
 
   async function Clientes90dias() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya Adm coord', response);
-        Cli90();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await Cli90();
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
   async function Cli90() {
     setSucess(20);
@@ -2879,15 +2813,11 @@ export default function Campanhas() {
   //===========================================================================
 
   async function VendasClientes(codVend: any) {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya Adm coord', response);
-        VendasCli(codVend);
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await VendasCli(codVend);
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
 
   async function VendasCli(codVend: any) {

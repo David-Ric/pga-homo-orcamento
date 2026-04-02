@@ -208,27 +208,8 @@ export default function AcompanhamnetoVendas() {
   const [showMensageSankhyaErro, setShowMensageSankhyaErro] = useState(false);
 
   useEffect(() => {
-    LoginSankhyaerro();
+    LoginSankhyaDashCoordenador()
   }, []);
-
-
-  async function LoginSankhyaerro() {
-    console.log("entrou no login Sankhya")
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log("login sankhya ok", response);
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log("login sankhya ok F", error);
-        setShowMensageSankhyaErro(true)
-      });
-  }
-
-
-
-
 
   const { appOnline } = useAppOnlineStatus();
   const isOnline = appOnline;
@@ -371,17 +352,11 @@ async function LoginSankhyaDashAdmin() {
 setLoading(true)
   //console.log(mesAtual); // Saída: "maio"
 
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log("login sankhya", response);
-        DadosMetaMesValorMesAdmin()
-
-      })
-      .catch((error) => {
-        console.log("erro", error);
-     //   setLoading(false)
-      });
+    try {
+      await DadosMetaMesValorMesAdmin()
+    } catch (error) {
+      console.log("erro", error);
+    }
 
   }
   //==========================================================================================
@@ -646,17 +621,11 @@ setLoading(true)
    setLoading(true)
    setSucess(10)
 
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log("login sankhya", response);
-        DadosMetaMesValorMesRepresentante()
-
-      })
-      .catch((error) => {
-        console.log("erro", error);
-      //  setLoading(false)
-      });
+    try {
+      await DadosMetaMesValorMesRepresentante()
+    } catch (error) {
+      console.log("erro", error);
+    }
 
   }
   //====================================================================================
@@ -1406,34 +1375,25 @@ async function LoginSankhyaDashCoordenador() {
     setAnoescolhido(AnoFilter)
     Anoescolhido=AnoFilter
    // setLoading(true)
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log("login sankhya coordenador", response);
+    try {
+      ListaCoord()
+      if(usuario.grupoId==5){
+        console.log("ENTROU COMO COORDENADOR================================")
+        await DadosVendasXMeta();
+      }else{
+        console.log("NÃO É COORDENADOR=======================================")
+        await DadosVendasXMetaAdm()
+      }
+    } catch (error) {
+      console.log("erro", error);
+      if(usuario.grupoId==5){
+        console.log("ENTROU COMO COORDENADOR================================")
+        await DadosVendasXMeta();
+      }else{
+        console.log("NÃO É COORDENADOR=======================================")
         ListaCoord()
-        if(usuario.grupoId==5){
-          console.log("ENTROU COMO COORDENADOR================================")
-          DadosVendasXMeta();
-        }else{
-          console.log("NÃO É COORDENADOR=======================================")
-          DadosVendasXMetaAdm()
-          //ListaCoord()
-
-        }
-      })
-      .catch((error) => {
-        console.log("erro", error);
-        if(usuario.grupoId==5){
-          console.log("ENTROU COMO COORDENADOR================================")
-          DadosVendasXMeta();
-        }else{
-          console.log("NÃO É COORDENADOR=======================================")
-          ListaCoord()
-
-        }
-
-        //  history("/espaco-colaborador");
-      });
+      }
+    }
   }
 
   async function DadosVendasXMeta() {
@@ -2048,36 +2008,10 @@ setconsultorPesquisa(options);
         setmesAescolhido(mesEscolhido)
           setAnoescolhido(AnoFilter)
           Anoescolhido=AnoFilter
-         // setLoading(true)
-          await api
-            .post(`/api/Sankhya/login`)
-            .then((response) => {
-              console.log("login sankhya Adm coord", response);
-             // ListaCoord()
-
-            })
-            .catch((error) => {
-              console.log("erro", error);
-
-
-
-              //  history("/espaco-colaborador");
-            });
         }
         async function LoginSankhyaPagina() {
 
          // setShowMensageSankhya(true)
-    
-            await api
-              .post(`/api/Sankhya/login`)
-              .then((response) => {
-                console.log("login sankhya Adm coord", response);
-  
-              })
-              .catch((error) => {
-                console.log("erro", error);
-  
-              });
           }
 
       async function LoginSankhyaDashAdm() {
@@ -2088,20 +2022,12 @@ setconsultorPesquisa(options);
           setAnoescolhido(AnoFilter)
           Anoescolhido=AnoFilter
          // setLoading(true)
-          await api
-            .post(`/api/Sankhya/login`)
-            .then((response) => {
-              console.log("login sankhya Adm coord", response);
-             // ListaCoord()
-              DadosVendasXMetaAdm();
-            })
-            .catch((error) => {
-              console.log("erro", error);
-
-                DadosVendasXMetaAdm();
-
-              //  history("/espaco-colaborador");
-            });
+          try {
+            await DadosVendasXMetaAdm();
+          } catch (error) {
+            console.log("erro", error);
+            await DadosVendasXMetaAdm();
+          }
         }
 
 
@@ -2576,16 +2502,11 @@ let [codVendedor, setcodVendedor] = useState(0)
 
 async function Clientes90dias() {
 
-     await api
-       .post(`/api/Sankhya/login`)
-       .then((response) => {
-         console.log("login sankhya Adm coord", response);
-         Cli90()
-       })
-       .catch((error) => {
-         console.log("erro", error);
-
-       });
+     try {
+       await Cli90()
+     } catch (error) {
+       console.log("erro", error);
+     }
    }
    async function Cli90() {
     setSucess(20)
@@ -2659,16 +2580,11 @@ async function VendasClientes(codVend:any) {
 
   // setShowMensageSankhya(true)
 
-     await api
-       .post(`/api/Sankhya/login`)
-       .then((response) => {
-         console.log("login sankhya Adm coord", response);
-         VendasCli(codVend)
-       })
-       .catch((error) => {
-         console.log("erro", error);
-
-       });
+     try {
+       await VendasCli(codVend)
+     } catch (error) {
+       console.log("erro", error);
+     }
    }
 
 async function VendasCli(codVend:any) {

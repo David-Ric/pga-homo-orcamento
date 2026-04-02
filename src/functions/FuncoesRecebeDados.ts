@@ -5,13 +5,11 @@ import Observer from './observer';
 
 //=============== Função Recebe dados ==========================================
 export async function receberDadosSankhya() {
-    
+    const sql = 'SELECT 1';
     await api
-      .post(`/api/Sankhya/login`)
+      .post(`/api/Sankhya/DadosDashSankhya?sql=${encodeURIComponent(sql)}`)
       .then((response) => {
         console.log("login sankhya", response);
-        //MetaXRealizado()
-
       })
       .catch((error) => {
         console.log("erro", error);

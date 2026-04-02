@@ -152,24 +152,6 @@ export default function Dashboard() {
     }
   }, [isOnline]);
 
-  useEffect(() => {
-    LoginSankhya();
-  }, []);
-
-  async function LoginSankhya() {
-    console.log('entrou no login Sankhya');
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya ok', response);
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log('login sankhya ok F', error);
-        setShowMensageSankhyaErro(true);
-      });
-  }
-
   const handleCloseMensageSankhya = () => setShowMensageSankhya(false);
   const [showMensageSankhya, setShowMensageSankhya] = useState(false);
 
@@ -208,15 +190,11 @@ export default function Dashboard() {
   const [valoresGrafico, setValoresGrafico] = useState<iGrafico[]>([]);
 
   async function Clientes90dias() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya Adm coord', response);
-        Cli90();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await Cli90();
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
 
   async function Cli90() {
@@ -312,17 +290,13 @@ export default function Dashboard() {
   );
   async function LoginSankhyaDashAdmin() {
     setLoading(true);
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-        DadosMetaMesValorMesAdmin();
-      })
-      .catch((error) => {
-        setShowMensageSankhya(false);
-        console.log('erro', error);
-        setLoading(false);
-      });
+    try {
+      await DadosMetaMesValorMesAdmin();
+    } catch (error) {
+      setShowMensageSankhya(false);
+      console.log('erro', error);
+      setLoading(false);
+    }
   }
   //==========================================================================================
 
@@ -612,18 +586,13 @@ export default function Dashboard() {
   async function LoginSankhyaDashRepresentante() {
     setLoading(true);
     setSucess(10);
-
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-        DadosMetaMesValorMesRepresentante();
-      })
-      .catch((error) => {
-        setShowMensageSankhya(false);
-        console.log('erro', error);
-        setLoading(false);
-      });
+    try {
+      await DadosMetaMesValorMesRepresentante();
+    } catch (error) {
+      setShowMensageSankhya(false);
+      console.log('erro', error);
+      setLoading(false);
+    }
   }
   //====================================================================================
 

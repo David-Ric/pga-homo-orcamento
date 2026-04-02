@@ -15,17 +15,11 @@ export const loadingRelatorioObserver = new Observer();
 
 //===============FUNÇÕES DOS RELATORIOS ==========================================
 export async function LoginSankhyaRelatorio() {
-    
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log("login sankhya", response);
-        MetaXRealizado()
-
-      })
-      .catch((error) => {
-        console.log("erro", error);
-      });
+    try {
+      await MetaXRealizado()
+    } catch (error) {
+      console.log("erro", error);
+    }
   }
 
   //===================================================================================

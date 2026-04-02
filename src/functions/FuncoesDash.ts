@@ -20,16 +20,11 @@ export async function LoginSankhyaDashAdmin() {
 
   loadingDash = true
   loadingDashObserver.notify(loadingDash);
-  await api
-    .post(`/api/Sankhya/login`)
-    .then((response) => {
-      console.log("login sankhya", response);
-      DadosMetaMesValorMesAdmin()
-     
-    })
-    .catch((error) => {
-      console.log("erro", error);
-    });
+  try {
+    await DadosMetaMesValorMesAdmin()
+  } catch (error) {
+    console.log("erro", error);
+  }
   loadingDash = false
   loadingDashObserver.notify(loadingDash);
 }
@@ -300,16 +295,11 @@ async function DadosClientesSemVendaAdmin() {
 export async function LoginSankhyaDashRepresentante() {
   loadingDash = true
   loadingDashObserver.notify(loadingDash);
-  await api
-    .post(`/api/Sankhya/login`)
-    .then((response) => {
-      console.log("login sankhya", response);
-      DadosMetaMesValorMesRepresentante()
-  
-    })
-    .catch((error) => {
-      console.log("erro", error);
-    });
+  try {
+    await DadosMetaMesValorMesRepresentante()
+  } catch (error) {
+    console.log("erro", error);
+  }
     
 }
 //====================================================================================
@@ -554,4 +544,3 @@ async function DadosQuantidadePedidosRepresentante() {
       
     });
 }
-

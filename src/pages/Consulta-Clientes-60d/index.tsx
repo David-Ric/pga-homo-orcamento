@@ -48,7 +48,6 @@ export default function ConsultaClientes60d() {
       try {
         setLoading(true);
         const codVendedor = usuario.username;
-        await api.post(`/api/Sankhya/login`);
         const filtroDias =
           !diasSemCompra || isNaN(Number(diasSemCompra))
             ? 'dias >= 60'

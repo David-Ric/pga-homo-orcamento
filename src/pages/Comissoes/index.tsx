@@ -398,23 +398,17 @@ export default function Comissoes() {
     }
   }
   async function LoginSankhya() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-
-        Relat();
-        Relat01();
-        Relat02();
-
-        setSucess(0);
-        sucess = 0;
-      })
-      .catch((error) => {
-        setLoading(false);
-        setShowMensageSankhya(false);
-        console.log('erro', error);
-      });
+    try {
+      await Relat();
+      await Relat01();
+      await Relat02();
+      setSucess(0);
+      sucess = 0;
+    } catch (error) {
+      setLoading(false);
+      setShowMensageSankhya(false);
+      console.log('erro', error);
+    }
   }
 
   //=================== verificar envio do pedido ====================//

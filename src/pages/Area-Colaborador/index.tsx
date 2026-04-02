@@ -554,58 +554,51 @@ export default function AreaColaborador() {
         localStorage.getItem('@Portal/usuario') || '{}'
       );
       const codVendedor = usuarioLocal.username;
-      await api
-        .post(`/api/Sankhya/login`)
-        .then(async () => {
-          const diasFiltro = String(
-            diasOverride !== undefined ? diasOverride : diasSemCompra
-          ).trim();
-          const diasNum = Number(diasFiltro);
-          const condDias =
-            !diasFiltro || isNaN(diasNum)
-              ? 'dias >= 60'
-              : `dias = ${diasNum}`;
-          const sql = `SELECT * FROM AD_VCLIENTES
+      const diasFiltro = String(
+        diasOverride !== undefined ? diasOverride : diasSemCompra
+      ).trim();
+      const diasNum = Number(diasFiltro);
+      const condDias =
+        !diasFiltro || isNaN(diasNum) ? 'dias >= 60' : `dias = ${diasNum}`;
+      const sql = `SELECT * FROM AD_VCLIENTES
           WHERE ${condDias}
            AND (VENCOD = ${codVendedor} OR ${codVendedor} IS NULL)
            AND VENCOD <> 0
            AND ATIVO = 1
            ORDER BY DIAS ASC`;
-          const response = await api.post(
-            `/api/Sankhya/DadosDashSankhya?sql=${encodeURIComponent(sql)}`
-          );
-          const data = response?.data?.responseBody?.rows || [];
-          const result = data.map((curr: any) => {
-            return {
-              dias: curr[16],
-              codpar: curr[4],
-              nomepar: curr[5],
-              cgc_cpf: curr[6],
-              uf: curr[8],
-              nomecid: curr[9],
-              endereco: curr[10],
-              complemento: curr[11],
-              telefone: curr[12],
-              email: curr[13],
-              ult_nunota: curr[14],
-              dtneg: curr[15],
-              vlrnota: curr[17],
-            };
-          });
-          setTotalPaginasInativos(
-            Math.ceil((result || []).length / qtdePaginaInativos)
-          );
-          setClientesInativosAll(result);
-          if (
-            Array.isArray(result) &&
-            result.length > 0 &&
-            showAlertOnResult &&
-            !showListaInativos
-          ) {
-            setShowInatividadeAlert(true);
-          }
-        })
-        .catch(() => {});
+      const response = await api.post(
+        `/api/Sankhya/DadosDashSankhya?sql=${encodeURIComponent(sql)}`
+      );
+      const data = response?.data?.responseBody?.rows || [];
+      const result = data.map((curr: any) => {
+        return {
+          dias: curr[16],
+          codpar: curr[4],
+          nomepar: curr[5],
+          cgc_cpf: curr[6],
+          uf: curr[8],
+          nomecid: curr[9],
+          endereco: curr[10],
+          complemento: curr[11],
+          telefone: curr[12],
+          email: curr[13],
+          ult_nunota: curr[14],
+          dtneg: curr[15],
+          vlrnota: curr[17],
+        };
+      });
+      setTotalPaginasInativos(
+        Math.ceil((result || []).length / qtdePaginaInativos)
+      );
+      setClientesInativosAll(result);
+      if (
+        Array.isArray(result) &&
+        result.length > 0 &&
+        showAlertOnResult &&
+        !showListaInativos
+      ) {
+        setShowInatividadeAlert(true);
+      }
     } catch {}
   }
 
@@ -793,15 +786,11 @@ export default function AreaColaborador() {
 
   //=================teste================================
   async function Login() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya coordenador', response);
-        teste();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await teste();
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
 
   async function teste() {
@@ -821,22 +810,17 @@ export default function AreaColaborador() {
   //======================================================
 
   async function LoginSank() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya coordenador', response);
-
-        if (usuario.grupoId == 2) {
-          DadosMetaMesValorMesRepresentante();
-        } else if (usuario.grupoId == 5) {
-          DadosMetaMesValorMesCoordenador();
-        } else {
-          DadosMetaMesValorMesAdmin();
-        }
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      if (usuario.grupoId == 2) {
+        await DadosMetaMesValorMesRepresentante();
+      } else if (usuario.grupoId == 5) {
+        await DadosMetaMesValorMesCoordenador();
+      } else {
+        await DadosMetaMesValorMesAdmin();
+      }
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
   function obterNumeroMesAtual(): number {
     const dataAtual = new Date();
@@ -1670,15 +1654,11 @@ ORDER BY 1,3`;
   //================Relatorio================================================================
 
   async function LoginSankhyaRelatorio() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-        MetaXRealizado();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await MetaXRealizado();
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
 
   async function MetaXRealizado() {
@@ -2339,16 +2319,9 @@ ORDER BY 1,3`;
           setTabelarro2('Erro ao receber dados para a tabela TipoNegociacao');
         }
 
-        await LoginSankhya();
         receberDadosSankhyaParceiro();
       })
       .catch((error) => {});
-  }
-  async function LoginSankhya() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then(() => {})
-      .catch(() => {});
   }
   async function SalvarNaturezaPadraoTipoNegociacao(codVend: string | number) {
     const sql = `SELECT 

@@ -69,11 +69,10 @@ export default function AcompanhamentoPedido() {
 
   async function LoginSankhyaerro() {
     console.log('entrou no login Sankhya');
+    const sql = 'SELECT 1';
     await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya ok', response);
-      })
+      .post(`/api/Sankhya/DadosDashSankhya?sql=${encodeURIComponent(sql)}`)
+      .then(() => {})
       .catch((error) => {
         setLoading(false);
         console.log('login sankhya ok F', error);
@@ -103,16 +102,12 @@ export default function AcompanhamentoPedido() {
 
   async function LoginSankhya() {
     console.log('entrou no login Sankhya');
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-        ListaCobranca();
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log('erro', error);
-      });
+    try {
+      await ListaCobranca();
+    } catch (error) {
+      setLoading(false);
+      console.log('erro', error);
+    }
   }
 
   async function ListaCobranca() {

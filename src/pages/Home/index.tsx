@@ -1603,15 +1603,11 @@ export default function Home() {
   }
 
   async function LoginSankhyaDashAdmin() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-        DadosMetaMesValorMesAdmin();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await DadosMetaMesValorMesAdmin();
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
   //==========================================================================================
 
@@ -1939,15 +1935,11 @@ export default function Home() {
   }
   //=======Funções Sankhya Coordenador ======================================================
   async function LoginSankhyaDashCoordenador() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya coordenador', response);
-        DadosMetaMesValorMesCoordenador();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await DadosMetaMesValorMesCoordenador();
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
 
   function obterNumeroMesAtual(): number {
@@ -2310,15 +2302,11 @@ ORDER BY 1,3`;
   //=======Funções Sankhya Representante ============================================================
 
   async function LoginSankhyaDashRepresentante() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya', response);
-        DadosMetaMesValorMesRepresentante();
-      })
-      .catch((error) => {
-        console.log('erro', error);
-      });
+    try {
+      await DadosMetaMesValorMesRepresentante();
+    } catch (error) {
+      console.log('erro', error);
+    }
   }
   //====================================================================================
 

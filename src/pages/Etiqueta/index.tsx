@@ -198,18 +198,13 @@ export default function Etiquetas() {
     setShowMensageSankhya(true);
     setSucess(20);
 
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya etiquetas', response);
-        setSucess(40);
-        ResultadoSql();
-      })
-      .catch((error) => {
-        console.log('erro login Sanhya', error);
-        ResultadoSql();
-        setShowMensageSankhya(false);
-      });
+    try {
+      setSucess(40);
+      await ResultadoSql();
+    } catch (error) {
+      console.log('erro login Sanhya', error);
+      setShowMensageSankhya(false);
+    }
   }
   const [values, setValues] = useState<Record<string, string>>({});
 

@@ -1259,23 +1259,19 @@ export default function SideNavBar() {
     console.log('entrou no login Sankhya');
     setrespostaSank('Verificando conexão...');
     respostaSank = 'Verificando conexão...';
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya ok', response);
-        receberDadosSankhyaVendedor();
-      })
-      .catch((error) => {
-        setLoading(false);
-        if (isMobile) {
-          setShowMensageSankhyaErro2(true);
-          GetParceiro();
-        } else {
-          console.log('erro ao efetuar login não mobile');
-          setShowMensageSankhya(false);
-          setShowMensageSankhyaErro(true);
-        }
-      });
+    try {
+      await receberDadosSankhyaVendedor();
+    } catch (error) {
+      setLoading(false);
+      if (isMobile) {
+        setShowMensageSankhyaErro2(true);
+        GetParceiro();
+      } else {
+        console.log('erro ao efetuar login não mobile');
+        setShowMensageSankhya(false);
+        setShowMensageSankhyaErro(true);
+      }
+    }
   }
 
   function ReceberDadosAutomatico() {
@@ -1424,18 +1420,11 @@ export default function SideNavBar() {
           setTabelarro2('Erro ao receber dados para a tabela TipoNegociacao');
         }
 
-        await LoginSankhya();
         receberDadosSankhyaParceiro();
       })
       .catch((error) => {
         setLoading(false);
       });
-  }
-  async function LoginSankhya() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then(() => {})
-      .catch(() => {});
   }
   async function SalvarNaturezaPadraoTipoNegociacao(codVend: string | number) {
     const sql = `SELECT 

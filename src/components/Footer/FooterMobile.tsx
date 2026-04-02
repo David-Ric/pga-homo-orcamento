@@ -967,6 +967,7 @@ async function popularProd(produto: iproduto[]) {
   }
 
   interface iItemTabela {
+    id?: number;
     tabelaPrecoId: number;
     idProd: number;
     preco: number;
@@ -1163,21 +1164,14 @@ async function popularProd(produto: iproduto[]) {
     setrespostaSank('Verificando conexão...');
     respostaSank = 'Verificando conexão...';
  
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya tester ok', response);
-        console.log('entrou no login Sankhya');
-
-        receberTipoNeg();
-      })
-      .catch((error) => {
-        setLoading(false);
-
-        console.log('erro ao efetuar login não mobile');
-        setShowMensageSankhya(false);
-        setShowMensageSankhyaErro(true);
-      });
+    try {
+      await receberTipoNeg();
+    } catch (error) {
+      setLoading(false);
+      console.log('erro ao efetuar login não mobile');
+      setShowMensageSankhya(false);
+      setShowMensageSankhyaErro(true);
+    }
   }
 
   async function receberTipoNeg() {
@@ -1478,7 +1472,6 @@ async function popularProd(produto: iproduto[]) {
         const data = response?.data?.responseBody?.rows ?? [];
         for (const curr of data) {
           result.push({
-            id: 0,
             tabelaPrecoId: Number(curr[0]),
             idProd: Number(curr[1]),
             preco: Number(curr[2]),
@@ -1681,23 +1674,19 @@ async function popularProd(produto: iproduto[]) {
     console.log('entrou no login Sankhya');
     setrespostaSank('Verificando conexão...');
     respostaSank = 'Verificando conexão...';
-    await api
-      .post(`/api/Sankhya/login`)
-      .then((response) => {
-        console.log('login sankhya ok', response);
-        receberDadosSankhyaVendedor();
-      })
-      .catch((error) => {
-        setLoading(false);
-        if (isMobile) {
-          setShowMensageSankhyaErro2(true);
-          GetParceiro();
-        } else {
-          console.log('erro ao efetuar login não mobile');
-          setShowMensageSankhya(false);
-          setShowMensageSankhyaErro(true);
-        }
-      });
+    try {
+      await receberDadosSankhyaVendedor();
+    } catch (error) {
+      setLoading(false);
+      if (isMobile) {
+        setShowMensageSankhyaErro2(true);
+        GetParceiro();
+      } else {
+        console.log('erro ao efetuar login não mobile');
+        setShowMensageSankhya(false);
+        setShowMensageSankhyaErro(true);
+      }
+    }
   }
 
   async function receberDadosSankhyaVendedor() {
@@ -1786,18 +1775,11 @@ async function popularProd(produto: iproduto[]) {
           setTabelarro2('Erro ao receber dados para a tabela TipoNegociacao');
         }
 
-        await LoginSankhya();
         receberDadosSankhyaParceiro();
       })
       .catch((error) => {
         setLoading(false);
       });
-  }
-  async function LoginSankhya() {
-    await api
-      .post(`/api/Sankhya/login`)
-      .then(() => {})
-      .catch(() => {});
   }
   async function SalvarNaturezaPadraoTipoNegociacao(codVend: string | number) {
     const sql = `SELECT 
@@ -2521,7 +2503,7 @@ async function popularProd(produto: iproduto[]) {
   }
 
   //=========== ITEM TABELA PRECO ===================================
-  interface iItemTabela {
+  interface iItemTabelaCompleto {
     id: number;
     tabelaPrecoId: number;
     idProd: number;
@@ -2542,7 +2524,7 @@ async function popularProd(produto: iproduto[]) {
     };
     atualizadoEm: string;
   }
-  async function popularItemTabela(itemTabela: iItemTabela[]) {
+  async function popularItemTabela(itemTabela: iItemTabelaCompleto[]) {
     const db = await openDB<PgamobileDB>('pgamobile', versao);
     const transaction = db.transaction('itemTabela', 'readwrite');
     const store = transaction.objectStore('itemTabela');
